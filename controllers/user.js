@@ -68,9 +68,6 @@ exports.user_login = (req, res) => {
               userId: user[0]._id,
             },
             "password",
-            {
-              expiresIn: "12h",
-            }
           );
           return res.status(200).json({
             message: "Auth successful",

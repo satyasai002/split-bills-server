@@ -50,6 +50,33 @@ exports.expenses_get_groupexpense = async (req, res, next) => {
       });
     });
 };
+exports.expenses_get_userexpenses = async (req, res, next) => {
+  const keyword = {
+    $or: [
+      { expPaidBy: mongoose.Types.ObjectId(req.userData.userId) },
+      {
+        userSplitBtw: {
+          $elemMatch: { Id: mongoose.Types.ObjectId(req.userData.userId) },
+        },
+      },
+    ],
+  };
+    Expense.find(keyword)
+      .populate("userSplitBtw", "-password")
+      .populate("expPaidBy", "-password")
+      .populate("userSplitBtw.Id", "-password")
+      .populate("expGrp")
+      .then(async (results) => {
+        res.status(200).send(results);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+        });
+      });
+};
+
 
 exports.expenses_update_expense = (req, res, next) => {
     Expense.find({ _id: req.body.expId });
